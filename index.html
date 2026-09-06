@@ -167,7 +167,7 @@ main{position:relative;z-index:4}
 .slot .card.flipped{transform:rotateY(180deg)}
 .face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid rgba(198,216,226,.45);
   border-radius:10px;overflow:hidden;box-shadow:0 16px 44px rgba(8,13,26,.65);background:var(--panel)}
-.face.back{background:url("images/back.jpg") center/cover no-repeat}
+.face.back{background:url("images/back2.jpg") center/cover no-repeat}
 .face.back::after{content:"";position:absolute;inset:0;border-radius:10px;
   box-shadow:inset 0 0 0 1px rgba(227,236,240,.25)}
 .face.front{transform:rotateY(180deg);background:var(--ice);display:flex;align-items:center;justify-content:center}
@@ -428,16 +428,24 @@ const MAJOR=[
 ];
 
 /* 小阿尔卡纳：4 花色 × (A + 2~10 + 侍从/骑士/王后/国王) = 56 张
-   原帖只提供了 4 张花色 ACE 图，其余 52 张牌面由本页 SVG 程序化生成 */
+   全部采用《幻星集塔罗 II》官方卡面（opus 537475591865428441） */
 const SUITS={
- wands:{cn:"权杖",en:"Wands",img:"images/s-wands.jpg",
-   theme:"火 · 行动与创造",u:"新的灵感点燃行动之火，大胆启程。",d:"计划搁浅，热情在半途熄灭。"},
- cups:{cn:"圣杯",en:"Cups",img:"images/s-cups.jpg",
-   theme:"水 · 情感与心灵",u:"爱与新情感的萌芽，心门敞开。",d:"情感阻塞，心灵之泉暂时干涸。"},
- swords:{cn:"宝剑",en:"Swords",img:"images/s-swords.jpg",
-   theme:"风 · 思维与真相",u:"真相的利刃斩开迷雾，心智清明。",d:"谎言与混淆交织，思绪陷入混乱。"},
- pentacles:{cn:"星币",en:"Pentacles",img:"images/s-pentacles.jpg",
-   theme:"土 · 物质与务实",u:"机遇的种子落地，财务迎来新起点。",d:"错失良机，务实的根基出现隐忧。"}
+ wands:{cn:"权杖",en:"Wands",theme:"火 · 行动与创造"},
+ cups:{cn:"圣杯",en:"Cups",theme:"水 · 情感与心灵"},
+ swords:{cn:"宝剑",en:"Swords",theme:"风 · 思维与真相"},
+ pentacles:{cn:"星币",en:"Pentacles",theme:"土 · 物质与务实"}
+};
+const SUIT_ART={
+ wands:{ace:"images/w-ace.jpg","2":"images/w-02.jpg","3":"images/w-03.jpg","4":"images/w-04.jpg","5":"images/w-05.jpg","6":"images/w-06.jpg","7":"images/w-07.jpg","8":"images/w-08.jpg","9":"images/w-09.jpg","10":"images/w-10.jpg",page:"images/w-page.jpg",knight:"images/w-knight.jpg",queen:"images/w-queen.jpg",king:"images/w-king.jpg"},
+ cups:{ace:"images/c-ace.jpg","2":"images/c-02.jpg","3":"images/c-03.jpg","4":"images/c-04.jpg","5":"images/c-05.jpg","6":"images/c-06.jpg","7":"images/c-07.jpg","8":"images/c-08.jpg","9":"images/c-09.jpg","10":"images/c-10.jpg",page:"images/c-page.jpg",knight:"images/c-knight.jpg",queen:"images/c-queen.jpg",king:"images/c-king.jpg"},
+ pentacles:{ace:"images/p-ace.jpg","2":"images/p-02.jpg","3":"images/p-03.jpg","4":"images/p-04.jpg","5":"images/p-05.jpg","6":"images/p-06.jpg","7":"images/p-07.jpg","8":"images/p-08.jpg","9":"images/p-09.jpg","10":"images/p-10.jpg",page:"images/p-page.jpg",knight:"images/p-knight.jpg",queen:"images/p-queen.jpg",king:"images/p-king.jpg"},
+ swords:{ace:"images/s-ace.jpg","2":"images/s-02.jpg","3":"images/s-03.jpg","4":"images/s-04.jpg","5":"images/s-05.jpg","6":"images/s-06.jpg","7":"images/s-07.jpg","8":"images/s-08.jpg","9":"images/s-09.jpg","10":"images/s-10.jpg",page:"images/s-page.jpg",knight:"images/s-knight.jpg",queen:"images/s-queen.jpg",king:"images/s-king.jpg"}
+};
+const ACE_MEAN={
+ wands:["新的灵感点燃行动之火，大胆启程。","计划搁浅，热情在半途熄灭。"],
+ cups:["爱与新情感的萌芽，心门敞开。","情感阻塞，心灵之泉暂时干涸。"],
+ swords:["真相的利刃斩开迷雾，心智清明。","谎言与混淆交织，思绪陷入混乱。"],
+ pentacles:["机遇的种子落地，财务迎来新起点。","错失良机，务实的根基出现隐忧。"]
 };
 const NUM_CN=["","A","二","三","四","五","六","七","八","九","十"];
 const NUM_EN=["","Ace","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten"];
@@ -505,104 +513,33 @@ const COURT_MEAN={
         king:["富足而稳重，事业有成。","顽固贪婪，守财乏味。"]}
 };
 
-/* 构建 78 张牌 */
+/* 构建 78 张牌 + 3 张赠送卡 */
 const ALL=[];
 MAJOR.forEach(c=>ALL.push({...c,suit:null,type:"major"}));
 for(const sk in SUITS){
   const s=SUITS[sk];
   for(let n=1;n<=10;n++){
     ALL.push({suit:sk,rank:n,n:s.cn+NUM_CN[n],e:NUM_EN[n]+" of "+s.en,
-      r:n===1?"A":String(n),img:n===1?s.img:undefined,
-      u:n===1?s.u:SUIT_MEAN[sk][n-2][0],d:n===1?s.d:SUIT_MEAN[sk][n-2][1],type:"minor"});
+      r:n===1?"A":String(n),img:SUIT_ART[sk][n===1?"ace":n],
+      u:n===1?ACE_MEAN[sk][0]:SUIT_MEAN[sk][n-2][0],d:n===1?ACE_MEAN[sk][1]:SUIT_MEAN[sk][n-2][1],type:"minor"});
   }
   COURTS.forEach((c,i)=>{
-    ALL.push({suit:sk,rank:c.k,n:s.cn+c.cn,e:c.en+" of "+s.en,r:c.en,
+    ALL.push({suit:sk,rank:c.k,n:s.cn+c.cn,e:c.en+" of "+s.en,r:c.en,img:SUIT_ART[sk][c.k],
       u:COURT_MEAN[sk][c.k][0],d:COURT_MEAN[sk][c.k][1],type:"minor"});
   });
 }
+/* 赠送卡：仅收录观赏，不参与抽牌 */
+const GIFT=[
+ {n:"幻星集 II 纪念",e:"PHANTASIA II",img:"images/gift-1.jpg",u:"《幻星集塔罗 II》纪念卡 —— 2233 娘与星群同贺，收藏这场奇幻之旅。"},
+ {n:"魔法奇幻花园",e:"MAGIC GARDEN",img:"images/gift-2.jpg",u:"幻星集之旅 · 魔法奇幻花园 —— 愿你的牌途常伴花开。"},
+ {n:"新年发财",e:"FORTUNE",img:"images/gift-3.jpg",u:"哔哩哔哩新年发财卡 —— 恭贺新禧，财运随星光而至。"}
+];
+GIFT.forEach(g=>ALL.push({...g,suit:null,type:"gift"}));
 
-/* =========================================================
-   小阿尔卡纳 SVG 生成器（复刻幻星集风格：
-   冰蓝外框 + 靛蓝内板 + 三角光纹 + 金色花色符号）
-========================================================= */
-const C={ice:"#e3ecf0",ice2:"#c6d8e2",line:"#9db4c4",panel:"#2e3d59",panel2:"#3a4c6d",
-  slate:"#4a6a8a",gold:"#d8b04a",gold2:"#f0d888",ink:"#22304a"};
-
-function glyph(kind,size){
-  const w=size;
-  switch(kind){
-    case "cups":return `<g fill="${C.gold}"><path d="M6 3h12c0 5-2.4 8-5 8.6V17h3.5v2h-9v-2H11v-5.4C8.4 11 6 8 6 3z"/></g>`;
-    case "pentacles":return `<g stroke="${C.gold}" fill="none" stroke-width="1.7"><circle cx="12" cy="12" r="9"/></g><path fill="${C.gold}" d="M12 5l2 4.4 4.8.4-3.6 3.2 1.1 4.7L12 15.2 7.7 17.7l1.1-4.7L5.2 9.8 10 9.4z"/>`;
-    case "swords":return `<g fill="${C.gold}"><path d="M12 1.5l2.1 12.7H9.9zM6 15.4h12l1 2.2h-5l-.4 2.4h-3.2L10 17.6H5z"/><circle cx="12" cy="21.6" r="1.3"/></g>`;
-    case "wands":return `<g fill="${C.gold}"><rect x="11" y="4.5" width="2" height="17.5" rx="1"/><path d="M12 5c-1.8-2.2-4.6-2.6-6.2-1.6 2 .3 3.8 1.2 4.9 3zM12 5c1.8-2.2 4.6-2.6 6.2-1.6-2 .3-3.8 1.2-4.9 3z"/></g>`;
-  }
-}
-function sparkle(x,y,s,o=1){return `<path d="M${x} ${y-s}l${s*.28} ${s*.72}L${x+s} ${y}l-${s*.72} ${s*.28}L${x} ${y+s}l-${s*.28}-${s*.72}L${x-s} ${y}l${s*.72}-${s*.28}z" fill="${C.gold2}" opacity="${o}"/>`}
-function diamond(x,y,s,o=.8){return `<path d="M${x} ${y-s}l${s*.62} ${s}l-${s*.62} ${s}l-${s*.62}-${s}z" fill="${C.ice2}" opacity="${o}"/>`}
-
-function crown(x,y,s){
-  return `<g transform="translate(${x-s/2},${y-s/2}) scale(${s/24})" fill="${C.gold}">
-    <path d="M4 17h16l1.4-9-4.6 3.4L12 5l-4.8 6.4L2.6 8z"/>
-    <rect x="4" y="18.4" width="16" height="2" rx="1"/></g>`;
-}
-function flourishCorners(){
-  const p=(t)=>`<g transform="${t}" stroke="${C.line}" fill="none" stroke-width="1.6" opacity=".85">
-    <path d="M4 34C4 16 16 4 34 4"/><path d="M4 26C4 13 13 4 26 4" opacity=".55"/>
-    <path d="M8 20c6-1 10 2 11 8-6-1-10-4-11-8z" fill="${C.ice2}" stroke="none"/>
-    ${sparkle(20,10,4,.9)}</g>`;
-  return p("")+p("translate(300,0) scale(-1,1)")+p("translate(0,500) scale(1,-1)")+p("translate(300,500) scale(-1,-1)");
-}
-function minorFaceSVG(card){
-  const s=SUITS[card.suit];
-  const isCourt=["page","knight","queen","king"].includes(card.rank);
-  const cid=`win-${card.suit}-${card.rank}`;
-  /* 中央原画窗口：嵌入对应花色立绘，裁掉原图底部的 ACE 字样 */
-  const art=`
-    <clipPath id="${cid}"><rect x="36" y="58" width="228" height="290" rx="9"/></clipPath>
-    <image href="${s.img}" x="36" y="58" width="228" height="290"
-      preserveAspectRatio="xMidYMid slice" clip-path="url(#${cid})"/>
-    <rect x="36" y="58" width="228" height="290" rx="9" fill="none" stroke="${C.slate}" stroke-width="1.4"/>
-    <rect x="41" y="63" width="218" height="280" rx="6" fill="none" stroke="${C.ice}" stroke-width=".8" opacity=".55"/>`;
-  let lower="";
-  if(isCourt){
-    const letter={page:"P",knight:"N",queen:"Q",king:"K"}[card.rank];
-    lower=`
-      <g>${crown(150,285,18)}</g>
-      <circle cx="150" cy="322" r="26" fill="${C.ink}" opacity=".9"/>
-      <circle cx="150" cy="322" r="26" fill="none" stroke="${C.gold}" stroke-width="1.4"/>
-      <text x="150" y="332" text-anchor="middle" font-family="Cinzel,serif" font-weight="700"
-        font-size="26" fill="${C.gold2}">${letter}</text>`;
-  }else{
-    const n=card.rank;
-    const rows=n<=5?[n]:[Math.ceil(n/2),Math.floor(n/2)];
-    const ys=rows.length===1?[373]:[365,392];
-    lower=rows.map((cnt,r)=>{
-      const startX=150-(cnt-1)*18;
-      return Array.from({length:cnt},(_,i)=>
-        `<g transform="translate(${startX+i*36-9},${ys[r]-9}) scale(0.75)">${glyph(card.suit,24)}</g>`).join("");
-    }).join("");
-  }
-  return `<svg viewBox="0 0 300 500" xmlns="http://www.w3.org/2000/svg">
-  <rect width="300" height="500" rx="10" fill="${C.ice}"/>
-  <rect x="7" y="7" width="286" height="486" rx="6" fill="none" stroke="${C.line}" stroke-width="1.4"/>
-  ${flourishCorners()}
-  <text x="150" y="44" text-anchor="middle" font-family="Cinzel,serif" font-weight="700"
-    font-size="26" fill="${C.panel}">${isCourt?"":card.rank}</text>
-  ${art}
-  ${lower}
-  <rect x="30" y="404" width="240" height="58" rx="4" fill="${C.ink}"/>
-  <rect x="30" y="404" width="240" height="58" rx="4" fill="none" stroke="${C.slate}" stroke-width="1" opacity=".6"/>
-  <text x="150" y="428" text-anchor="middle" font-family="Cinzel,serif" font-weight="600"
-    font-size="15.5" letter-spacing="2.5" fill="${C.ice}">${card.e.toUpperCase()}</text>
-  <text x="150" y="450" text-anchor="middle" font-family="'Noto Serif SC',serif"
-    font-size="13" letter-spacing="5" fill="${C.gold}">${s.cn}${isCourt?{page:"侍从",knight:"骑士",queen:"王后",king:"国王"}[card.rank]:NUM_CN[card.rank]}</text>
-</svg>`;
-}
+/* 卡面渲染：78 张牌全部使用官方插画（小阿尔卡纳 SVG 生成器已随
+   《幻星集塔罗 II》全图发布而退役） */
 function cardFaceHTML(card,reversed=false){
-  if(card.img){
-    return `<img src="${card.img}" alt="${card.n}" loading="lazy" ${reversed?'style="transform:rotate(180deg)"':''}>`;
-  }
-  return minorFaceSVG(card);
+  return `<img src="${card.img}" alt="${card.n}" loading="lazy" ${reversed?'style="transform:rotate(180deg)"':''}>`;
 }
 
 /* =========================================================
@@ -643,7 +580,7 @@ function randInt(n){
 }
 /* Fisher–Yates 全牌无偏洗切（旧 sort(random) 洗牌有偏，已弃用） */
 function shuffleDeck(){
-  const d=[...ALL];
+  const d=ALL.filter(c=>c.type!=="gift");
   for(let i=d.length-1;i>0;i--){
     const j=randInt(i+1);
     [d[i],d[j]]=[d[j],d[i]];
@@ -685,9 +622,7 @@ function flip(i){
   const reversed=randInt(2)===1;
   const c=pool[i];
   cardEl.querySelector('.front').innerHTML=
-    c.img
-      ?`<img src="${c.img}" alt="${c.n}" ${reversed?'style="transform:rotate(180deg)"':''}>`
-      :`<div style="transform:${reversed?'rotate(180deg)':'none'};width:100%;height:100%">${minorFaceSVG(c)}</div>`;
+    `<img src="${c.img}" alt="${c.n}" ${reversed?'style="transform:rotate(180deg)"':''}>`;
   cardEl.classList.add('flipped');
   cardEl.closest('.slot').classList.add('revealed');
   drawn.push({...c,reversed,pos:curSpread.positions[i][0]});
@@ -699,8 +634,7 @@ function showReading(){
   const reading=document.getElementById('reading');
   reading.innerHTML=drawn.map((c)=>`
     <div class="read-card">
-      <div class="rc-img ${c.reversed?'rev-img':''}">${c.img
-        ?`<img src="${c.img}" alt="${c.n}">`:minorFaceSVG(c)}</div>
+      <div class="rc-img ${c.reversed?'rev-img':''}"><img src="${c.img}" alt="${c.n}"></div>
       <h3>${c.n}</h3>
       <div class="rsub">${c.type==="major"?c.r+" · ":""}${c.e.toUpperCase()}</div>
       <div class="center"><span class="rpos">${c.pos} · ${c.reversed?"逆 位":"正 位"}</span></div>
@@ -743,7 +677,7 @@ function quickDraw(){
 /* =========================================================
    GALLERY + MODAL
 ========================================================= */
-const FILTERS=[["all","全部"],["major","大阿尔卡纳"],["wands","权杖"],["cups","圣杯"],["swords","宝剑"],["pentacles","星币"]];
+const FILTERS=[["all","全部"],["major","大阿尔卡纳"],["wands","权杖"],["cups","圣杯"],["swords","宝剑"],["pentacles","星币"],["gift","赠送牌"]];
 let curFilter="all";
 const filterRow=document.getElementById('filterRow');
 const grid=document.getElementById('galleryGrid');
@@ -759,23 +693,22 @@ function renderGallery(){
   grid.innerHTML=list.map((c,i)=>{
     const idx=ALL.indexOf(c);
     return `<div class="gcard ${c.type==='minor'?'minor':''}" onclick="openModal(${idx})">
-      <div class="frame">${c.img
-        ?`<img src="${c.img}" alt="${c.n}" loading="lazy">`
-        :minorFaceSVG(c)}</div>
+      <div class="frame"><img src="${c.img}" alt="${c.n}" loading="lazy"></div>
       <div class="gl"><b>${c.n}</b><span>${c.type==="major"?c.r+" · ":""}${c.e.toUpperCase()}</span></div>
     </div>`;
   }).join('');
 }
 function openModal(i){
   const c=ALL[i];
-  document.getElementById('mImg').innerHTML=c.img
-    ?`<img src="${c.img}" alt="${c.n}">`:minorFaceSVG(c);
+  document.getElementById('mImg').innerHTML=`<img src="${c.img}" alt="${c.n}">`;
   document.getElementById('mRank').textContent=
-    (c.type==="major"?"MAJOR ARCANA · "+c.r:SUITS[c.suit].en.toUpperCase()+" · "+c.r.toUpperCase());
+    c.type==="major"?"MAJOR ARCANA · "+c.r
+    :c.type==="gift"?"BONUS CARD · 赠送牌"
+    :SUITS[c.suit].en.toUpperCase()+" · "+c.r.toUpperCase();
   document.getElementById('mName').textContent=c.n;
   document.getElementById('mEn').textContent=c.e.toUpperCase()+(c.type==="minor"?" · "+SUITS[c.suit].theme:"");
   document.getElementById('mUp').textContent=c.u;
-  document.getElementById('mRev').textContent=c.d;
+  document.getElementById('mRev').textContent=c.d||"—— 纪念卡，无逆位释义 ——";
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -810,7 +743,7 @@ function renderHist(){
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 
-document.getElementById('cntTotal').textContent=ALL.length;
+document.getElementById('cntTotal').textContent=ALL.filter(c=>c.type!=="gift").length;
 buildDeck();
 renderGallery();
 renderHist();
