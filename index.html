@@ -2,7 +2,10 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1c2740">
 <title>幻星集塔罗 · PHANTASIA TAROT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
@@ -268,6 +271,23 @@ footer p{font-family:'Cinzel','Noto Serif SC',serif;font-size:12px;letter-spacin
 footer .credit{margin-top:8px;font-size:13px;letter-spacing:.05em;font-family:'Noto Serif SC',serif}
 footer .credit a{color:var(--slate);text-decoration:none}
 footer .credit a:hover{color:var(--gold)}
+
+/* ---------- mobile / touch ---------- */
+.card,.btn,.fchip,.gcard{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+@media(max-width:640px){
+  .hero{min-height:76vh;padding-top:48px}
+  .brand span{display:none}
+  .spread-daily .slot,.spread-time .slot{width:min(150px,27vw);height:auto;aspect-ratio:196/330}
+  .deck.spread-daily,.deck.spread-time{gap:12px;margin:58px auto 44px}
+  .slot .hint{font-size:11px;letter-spacing:.12em;bottom:-22px}
+  .gallery{grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:14px}
+  .sec-head p,.gcard .gl span{font-size:15px}
+  .modal-box{padding:22px 16px;gap:20px}
+  .modal-box .m-img{width:168px}
+  .modal-box h3{font-size:22px}
+  .read-card p{font-size:16px}
+  .ask-box{padding:26px 18px}
+}
 </style>
 </head>
 <body>
